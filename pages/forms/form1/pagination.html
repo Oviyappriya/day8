@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paagination Guvi Task</title>
+ <link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+  crossorigin="anonymous"
+/>
+<link
+  rel="stylesheet"
+  href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+  integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+  crossorigin="anonymous"
+/>
+<style>
+    .pagination a {
+color: black;
+float: left;
+padding: 8px 16px;
+text-decoration: none;
+transition: background-color .3s;
+}
+.pagination a.active {
+background-color: dodgerblue;
+color: white;
+}
+.pagination a:hover:not(.active) {background-color: #ddd;}
+</style>
+</head>
+<body>
+<script>
+ var xhttp = new XMLHttpRequest();
+xhttp.open("GET", "https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json",true);
+xhttp.send();
+xhttp.onload = function () {
+    if (xhttp.status >= 200 && xhttp.status < 300) {
+      var resp = JSON.parse(this.response);
+      sessionStorage.setItem("list",this.response)
+    } 
+    else {
+      console.log(xhttp.responseText);
+    }
+  };
+ const list = JSON.parse(sessionStorage.getItem("list"));
+ sessionStorage.removeItem("list");
+ sessionStorage.clear();
+ console.log(sessionStorage);
+body = document.querySelector('body');
+var containerDiv =  document.createElement("div");
+containerDiv.setAttribute("class","container");
+containerDiv.style.display = "flex";
+containerDiv.style.flexDirection = "column";
+containerDiv.style.justifyContent = "center";
+containerDiv.style.alignItems = "center";
+containerDiv.style.marginTop = "5%";
+document.body.appendChild(containerDiv);
+let mainDiv = document.createElement("div");
+containerDiv.appendChild(mainDiv);
+let wrapperDiv = document.createElement("div");
+wrapperDiv.setAttribute("id","content");
+var numOfRows = 5;
+function Display(numOfRows , pageNo){
+      console.clear();
+      let startLimit = (pageNo-1)*numOfRows;
+      let endLimit = ((pageNo)*numOfRows<list.length) ? (pageNo)*numOfRows : list.length;
+      for(let i = startLimit ; i < endLimit; i++) {
+          displayListElement(list[i],wrapperDiv);
+      }
+}
+function displayListElement(item,wrapperDiv) {
+    let div = document.createElement("div");
+    console.log(item);
+    for(let i in item) {
+        div.innerHTML = div.innerHTML +"<br>"+ item[i];
+    }
+    div.style.fontSize = "15px";
+    div.style.display = "flex";
+    div.style.justifyContent = "left";
+    div.style.borderBottom = "1px solid black";
+    div.style.padding = "5px"
+    wrapperDiv.appendChild(div);
+    mainDiv.appendChild(wrapperDiv);
+}
+function createPagination(list) {
+    let numberOfPages = Math.ceil(list.length/numOfRows);
+    let div = document.createElement("div");
+    div.style.margin = "40px";
+    div.setAttribute("class","pagination");
+    
+    let ul = document.createElement("ul");
+    ul.style.display = "flex";
+    ul.setAttribute("class","pagination pagination-lg")
+    for(let i=1; i<=numberOfPages; i++) {
+        let li =  document.createElement("li");
+        li.style.listStyleType = "none";
+        li.style.borderRight = "1px solid black"
+        li.setAttribute("class","page-item");
+        
+        let a = document.createElement("a");
+        a.innerHTML = i;
+        a.style.fontSize = "20px";
+        a.style.padding = "5px";
+        a.setAttribute("class","page-link")
+        a.setAttribute("href","#");
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+    div.appendChild(ul);
+    containerDiv.appendChild(div);
+}
+Display(numOfRows, 1);
+createPagination(list);
+
+var pageButtons = document.querySelectorAll(".page-link");
+pageButtons.forEach(e =>{
+    e.addEventListener('click', () => {
+        let ele =  document.getElementById("content");
+        ele.innerHTML = "";
+        let pageNum = parseInt(e.innerHTML);
+        Display(numOfRows, pageNum);
+    })
+})
+</script>
+</body>
+</html>
